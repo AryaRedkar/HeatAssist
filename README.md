@@ -1,225 +1,171 @@
-# 🌡️ HeatAssist — Personalized Urban Heat Risk & Safety Planner
+HeatAssist — Urban Heat Risk & Safety Planner
+Team: HeatAssist
+Event: BLITZ Hackathon · IEEE SFIT Student Branch
+Domain: Environment & Sustainability
 
-> **Team HeatAssist** · BLITZ Hackathon · IEEE SFIT Student Branch  
-> Domain: Environment & Sustainability
+The Problem
+Weather apps only tell you the temperature. They don't tell you if you should actually step outside.
 
----
+If you're older, pregnant, or have health issues — the same 35°C day affects you differently than a healthy college student. Same for your dog's paws. Same for your balcony plants.
 
-## 📌 Problem Statement
+HeatAssist fills that gap. It takes raw weather data and gives you a straight answer: Should you go out or not?
 
-Urban heat is a growing public health crisis — but most weather apps only show temperature. They don't tell **you**, specifically, whether it's safe to go outside based on your health, your pet, or your plants.
+What It Does
+Instead of just showing numbers, HeatAssist gives personalized advice:
 
-**HeatAssist** solves this by turning raw weather data into personalized, actionable safety decisions.
+For you — based on age, health conditions, fitness level, pregnancy
 
----
+For your pet — paw burn risk, safe walking hours
 
-## 💡 What It Does
+For your plants — when to water, when to move to shade
 
-HeatAssist analyzes real-time weather conditions and user-specific factors to determine safe outdoor activity levels. It goes beyond generic weather apps to give:
+Best time to go out — across all 24 hours
 
-- ✅ **Is it safe for YOU** — based on age, health, fitness, pregnancy
-- ✅ **Is it safe for your PET** — paw burn risk, walking time windows
-- ✅ **Is it safe for your PLANTS** — watering schedule, shade advice
-- ✅ **Best time slots** to go out across the full 24-hour day
-- ✅ **Chat assistant** for instant decisions ("Can I run at 2 PM?")
+Chat assistant — ask "Can I run at 2 PM?" and get an answer
 
----
+How It Works (The Science Behind It)
+The heat score (0 to 100) combines multiple factors:
 
-## 🧩 Core Features
+Factor	Where it comes from
+Temperature + "Feels like"	OpenWeatherMap
+Humidity	OpenWeatherMap
+UV Index	Open-Meteo
+Wind speed	OpenWeatherMap
+Air Quality (AQI)	OWM Air Pollution API
+Activity level	You tell us
+Duration outside	You tell us
+Age, health, fitness	Your profile
+We also reference standard heat safety models — WBGT (ISO 7933), NWS Heat Index, WHO air quality guidelines, and ASHRAE 55 for wind cooling.
 
-### 🔥 Personalized Heat Risk Engine
-Calculates a **0–100 heat score** using a weighted composite index inspired by:
-- **WBGT** (Wet Bulb Globe Temperature) — ISO 7933 / NIOSH occupational health standard
-- **Heat Index** (Steadman 1979 / NWS) — apparent temperature from temp + humidity
-- **WHO Air Quality Guidelines 2021** — AQI amplifies heat stress
-- **ASHRAE 55** — wind cooling factor
-- **IPCC AR6** — UV Index radiant heat risk
+Features
+Personalized Heat Risk Engine
+Gives a score 0-100 with clear bands:
 
-| Factor | Source |
-|--------|--------|
-| Temperature + Feels Like | OWM real-time station data |
-| Humidity | OWM |
-| UV Index | Open-Meteo (free) |
-| Wind Speed | OWM |
-| Air Quality (AQI) | OWM Air Pollution API |
-| Activity level | User input |
-| Duration of exposure | User input |
-| Age, health, fitness, profession | User profile |
+<45 Low → Safe to go out
 
-### ⏰ 24-Hour Heat Danger Clock
-Visual clock dial showing safe/dangerous hours at a glance — green arcs are safe, red arcs are extreme. Includes a live needle showing the current time.
+45-59 Moderate → Caution
 
-### 🐶 Pet Advisor
-- Estimates **road surface temperature** (`temp × 1.6 - 6`)
-- Warns when pavement is too hot for paws
-- Suggests safest walking windows
+60-74  High → Avoid long exposure
 
-### 🌿 Plant Advisor
-- Recommends watering times based on heat score
-- Advises when to move plants to shade or indoors
+≥75 Extreme → Stay indoors
 
-### 💬 Heat Chatbot
-Ask natural questions like:
-- *"Can I go for a run at 2 PM?"*
-- *"Is it safe to walk my dog this evening?"*
-- *"Is it safe right now?"*
+24-Hour Danger Clock
+A visual clock showing safe hours (green) vs dangerous hours (red). Live needle shows current time.
+Pet Advisor
+Estimates ground temperature (air temp × 1.6 - 6) and warns if pavement will burn paws. Suggests best walking windows.
+Plant Advisor
+Tells you when to water and when to bring plants inside based on heat score.
+Chatbot
+Ask normal questions like:
 
-Gets a risk-score-based reply instantly.
+"Can I go for a run at 2 PM?"
 
-### 🗺️ Neighbourhood-Level Accuracy
-Supports **90+ Mumbai neighbourhoods** with precise lat/lon coordinates — Borivali, Bandra, Powai, Lower Parel, and more. Weather is fetched for your exact area, not just the city.
+"Is it safe to walk my dog right now?"
 
----
+"Should I water my plants today?"
 
-## 🏗️ System Architecture
+Gets a straight answer.
 
-```
-Data Layer
-├── OpenWeatherMap API       ← Primary weather (real IMD station data)
-├── Open-Meteo API           ← UV Index (free, no key)
-├── OWM Air Pollution API    ← AQI
-└── User Profile             ← Age, health, profession, pet, plant
+🗺️ Works for 90+ Mumbai Neighbourhoods
+Borivali, Bandra, Powai, Lower Parel, Andheri, Colaba, Thane, Navi Mumbai — each with its own coordinates and weather.
 
-Engine Layer
-├── Weather Module           ← Fetches + resolves neighbourhood coords
-├── Heat Risk Engine         ← Calculates 0-100 score
-└── Profile Analyzer         ← Applies personal vulnerability factors
-
-Advisory Layer
-├── Time Window Analyzer     ← 24-hour safe slot calculator
-├── Pet Advisor              ← Paw burn + walk time logic
-├── Plant Advisor            ← Shade + watering recommendations
-└── Suggestion Aggregator    ← Combined output to dashboard
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React.js + Vite |
-| Styling | Tailwind CSS |
-| Backend | Python + Flask |
-| Weather API | OpenWeatherMap (primary) |
-| UV Index | Open-Meteo (free) |
-| AQI | OWM Air Pollution API |
-| Logic | Python (heat_engine.py) |
-| Chat | Rule-based + time-aware Flask route |
-
----
-
-## 📁 Project Structure
-
-```
+How We Built It
+Architecture Overview
+text
+Weather Data (OWM + Open-Meteo + AQI API)
+        ↓
+Heat Risk Engine (calculates 0-100 score)
+        ↓
+Profile Analyzer (adjusts for age/health/pet/plant)
+        ↓
+Advisors (time windows, pet, plant, chat)
+        ↓
+Dashboard (what you see)
+Tech Stack
+Layer	What we used
+Frontend	React.js + Vite
+Styling	Tailwind CSS
+Backend	Python + Flask
+Weather APIs	OpenWeatherMap, Open-Meteo (UV), OWM Air Pollution
+Logic	Python (heat_engine.py)
+Chat	Rule-based + time-aware Flask route
+Project Structure
+text
 urban-heat-app/
 │
 ├── backend/
-│   ├── app.py               # Flask app — all API routes
-│   ├── heat_engine.py       # Heat score algorithm (scientific basis)
+│   ├── app.py              # Main Flask server
+│   ├── heat_engine.py      # Heat score logic
 │   ├── requirements.txt
-│   └── .env                 # OWM_API_KEY, PORT
+│   └── .env                # API keys
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── api/
-│   │   │   └── index.js     # fetchWeather, fetchRisk, fetchChat
-│   │   ├── components/
-│   │   │   ├── HeatClock.jsx
-│   │   │   ├── RiskCard.jsx
-│   │   │   ├── PetAdvisor.jsx
-│   │   │   └── PlantAdvisor.jsx
-│   │   ├── pages/
-│   │   │   ├── Home.jsx     # 3-step onboarding wizard
-│   │   │   ├── Dashboard.jsx
-│   │   │   └── Chat.jsx
+│   │   ├── api/            # API calls
+│   │   ├── components/     # HeatClock, RiskCard, etc.
+│   │   ├── pages/          # Home, Dashboard, Chat
 │   │   └── App.jsx
-│   └── .env                 # VITE_API_URL
+│   └── .env
 │
 └── README.md
-```
+Setup Instructions
+What you need
+Python 3.8+
 
----
+Node.js 18+
 
-## ⚙️ Setup & Installation
+Free OpenWeatherMap API key
 
-### Prerequisites
-- Python 3.8+
-- Node.js 18+
-- OpenWeatherMap API key (free at [openweathermap.org](https://openweathermap.org))
+Steps
+1. Clone the repo
 
----
-
-### 1. Clone the repository
-
-```bash
+bash
 git clone https://github.com/your-team/urban-heat-app.git
 cd urban-heat-app
-```
+2. Backend
 
----
-
-### 2. Backend setup
-
-```bash
+bash
 cd backend
 pip install flask flask-cors requests python-dotenv
-```
+Create backend/.env:
 
-Create `backend/.env`:
-```
-OWM_API_KEY=your_openweathermap_key_here
+text
+OWM_API_KEY=your_key_here
 PORT=9000
-```
+Run it:
 
-Start the server:
-```bash
+bash
 python app.py
-```
-
 You should see:
-```
-[STARTUP] Weather source: OWM primary + Open-Meteo UVI fallback
-[STARTUP] OWM_API_KEY: YES
+
+text
+[STARTUP] Weather source: OWM + Open-Meteo
 [STARTUP] Running on http://localhost:9000
-```
+3. Frontend
 
----
-
-### 3. Frontend setup
-
-```bash
+bash
 cd frontend
 npm install
-```
+Create frontend/.env:
 
-Create `frontend/.env`:
-```
+text
 VITE_API_URL=http://localhost:9000
-```
+Run it:
 
-Start the dev server:
-```bash
+bash
 npm run dev
-```
+Open http://localhost:5173
 
-App runs at `http://localhost:5173`
-
----
-
-## 🔌 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/weather?city=Mumbai&neighbourhood=Borivali` | Fetch real-time weather for a neighbourhood |
-| POST | `/api/risk` | Calculate heat risk score + safe windows |
-| POST | `/api/chat` | Chatbot — parse time from message, return risk reply |
-| GET | `/api/health` | Server health check |
-| GET | `/api/neighbourhoods` | List all supported Mumbai neighbourhoods |
-| GET | `/api/test-geo?neighbourhood=Bandra&city=Mumbai` | Diagnostic pipeline test |
-
-### Sample `/api/risk` request body
-```json
+API Endpoints
+Method	Endpoint	What it does
+GET	/api/weather?city=Mumbai&neighbourhood=Borivali	Get weather for a neighbourhood
+POST	/api/risk	Calculate heat risk score
+POST	/api/chat	Chatbot response
+GET	/api/health	Check if server is running
+GET	/api/neighbourhoods	List all Mumbai neighbourhoods
+GET	/api/test-geo?neighbourhood=Bandra	Debug pipeline
+Example /api/risk request
+json
 {
   "temp": 33,
   "feels_like": 38,
@@ -233,10 +179,8 @@ App runs at `http://localhost:5173`
   "pet": "dog",
   "plant_type": "outdoor"
 }
-```
-
-### Sample `/api/chat` request body
-```json
+Example /api/chat request
+json
 {
   "message": "Can I go for a run at 2 PM?",
   "temp": 33,
@@ -246,53 +190,10 @@ App runs at `http://localhost:5173`
   "aqi": 3,
   "profile": []
 }
-```
+Mumbai Neighbourhoods Supported
+90+ areas including: Borivali, Kandivali, Malad, Goregaon, Andheri, Bandra, Juhu, Powai, Dadar, Worli, Lower Parel, Colaba, Thane, Navi Mumbai, Kharghar, Virar, Nalasopara, Kalyan, Panvel.
 
----
-
-## 📊 Heat Score Bands
-
-| Score | Risk Level | Meaning |
-|-------|-----------|---------|
-| < 45 | 🟢 Low | Safe to go out |
-| 45–59 | 🟡 Moderate | Caution advised |
-| 60–74 | 🟠 High | Avoid prolonged exposure |
-| ≥ 75 | 🔴 Extreme | Stay indoors |
-
----
-
-## 🌍 Supported Neighbourhoods (Mumbai)
-
-90+ neighbourhoods including: Borivali, Kandivali, Malad, Goregaon, Andheri, Bandra, Juhu, Powai, Dadar, Worli, Lower Parel, Colaba, Thane, Navi Mumbai, Kharghar, Virar, Nalasopara, Kalyan, Panvel, and many more.
-
-Full list available at: `GET /api/neighbourhoods`
-
----
-
-## 🚀 Deployment
-
-### Backend — Render (free)
-1. Push `backend/` to GitHub
-2. Create new **Web Service** on [render.com](https://render.com)
-3. Set environment variables: `OWM_API_KEY`, `PORT=9000`
-4. Build command: `pip install -r requirements.txt`
-5. Start command: `python app.py`
-
-### Frontend — Vercel (free)
-1. Push `frontend/` to GitHub
-2. Import project on [vercel.com](https://vercel.com)
-3. Set environment variable: `VITE_API_URL=https://your-render-url.onrender.com`
-4. Deploy
-
----
-
-## 👥 Team
-
-**Team HeatAssist** — BLITZ Hackathon, IEEE SFIT Student Branch & WIE  
+Team
+HeatAssist
+BLITZ Hackathon · IEEE SFIT Student Branch & WIE
 Domain: Environment & Sustainability
-
----
-
-## 📄 License
-
-MIT License — free to use, modify, and distribute.
